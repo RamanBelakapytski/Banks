@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class CustomerDao {
@@ -49,7 +50,7 @@ public class CustomerDao {
         final var arrayList = new ArrayList<Customer>();
 
         try (var connection = database.getConnection();
-             var statement = connection.prepareStatement("select id, name, customer_type from customer");
+             var statement = connection.prepareStatement("SELECT id, name, customer_type FROM customer");
              var resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 arrayList.add(toCustomer(resultSet));
@@ -60,9 +61,25 @@ public class CustomerDao {
         return arrayList;
     }
 
+    public Optional<Customer> findById(UUID id) {
+        try (var connection = database.getConnection();
+             var statement = connection.prepareStatement("SELECT id, name, customer_type FROM customer WHERE id = ?")) {
+            statement.setObject(1, id);
+            try (var resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(toCustomer(resultSet));
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
+    }
+
     private Customer toCustomer(ResultSet resultSet) throws SQLException {
         return new Customer(
-                (java.util.UUID) resultSet.getObject("id"),
+                (UUID) resultSet.getObject("id"),
                 resultSet.getString("name"),
                 CustomerType.valueOf(resultSet.getString("customer_type")));
     }

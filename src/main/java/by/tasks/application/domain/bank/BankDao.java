@@ -84,8 +84,7 @@ public class BankDao {
         try (var connection = database.getConnection();
              var statement = existsStatement(connection, name);
              var resultSet = statement.executeQuery()) {
-            resultSet.next();
-            return resultSet.getInt(1) > 0;
+            return resultSet.next() && resultSet.getInt(1) > 0;
         } catch (SQLException sqlException) {
             throw new RuntimeException(sqlException);
         }
@@ -93,7 +92,7 @@ public class BankDao {
 
     private Bank toBank(ResultSet resultSet) throws SQLException {
         return new Bank(
-                (java.util.UUID) resultSet.getObject("id"),
+                (UUID) resultSet.getObject("id"),
                 resultSet.getString("name"),
                 Map.of(
                         LEGAL, resultSet.getBigDecimal("legal_fee"),

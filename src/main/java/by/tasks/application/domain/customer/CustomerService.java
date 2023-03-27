@@ -1,20 +1,20 @@
 package by.tasks.application.domain.customer;
 
 import by.tasks.application.BankApplicationException;
-import by.tasks.application.domain.account.AccountService;
-import by.tasks.application.domain.bank.BankService;
+import by.tasks.application.domain.account.AccountDao;
+import by.tasks.application.domain.bank.BankDao;
 
 import java.util.List;
 
 public class CustomerService {
     private final CustomerDao customerDao;
-    private final BankService bankService;
-    private final AccountService accountService;
+    private final BankDao bankDao;
+    private final AccountDao accountDao;
 
-    public CustomerService(CustomerDao customerDao, BankService bankService, AccountService accountService) {
+    public CustomerService(CustomerDao customerDao, BankDao bankDao, AccountDao accountDao) {
         this.customerDao = customerDao;
-        this.bankService = bankService;
-        this.accountService = accountService;
+        this.bankDao = bankDao;
+        this.accountDao = accountDao;
     }
 
     public Customer addCustomer(String name, CustomerType customerType) {
