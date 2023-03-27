@@ -25,7 +25,7 @@ public class CommandProcessor {
         final var executor = commandExecutors.get(command.commandType());
 
         if (executor == null) {
-            throw new BankApplicationException("Could not find executor for " + command.commandType() + " command");
+            throw new BankApplicationException("Can't find executor for " + command.commandType() + " command");
         }
 
         executor.execute(command.params());

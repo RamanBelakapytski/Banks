@@ -2,6 +2,8 @@ package by.tasks.application.domain.bank;
 
 import by.tasks.application.database.Database;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -78,6 +80,17 @@ public class BankDao {
         }
     }
 
+    public boolean existsByName(String name) {
+        try (var connection = database.getConnection();
+             var statement = existsStatement(connection, name);
+             var resultSet = statement.executeQuery()) {
+            resultSet.next();
+            return resultSet.getInt(1) > 0;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
+    }
+
     private Bank toBank(ResultSet resultSet) throws SQLException {
         return new Bank(
                 (java.util.UUID) resultSet.getObject("id"),
@@ -86,5 +99,11 @@ public class BankDao {
                         LEGAL, resultSet.getBigDecimal("legal_fee"),
                         NATURAL, resultSet.getBigDecimal("natural_fee")
                 ));
+    }
+
+    private PreparedStatement existsStatement(Connection connection, String name) throws SQLException {
+        var statement = connection.prepareStatement("SELECT COUNT(*) FROM bank WHERE name = ?");
+        statement.setString(1, name);
+        return statement;
     }
 }

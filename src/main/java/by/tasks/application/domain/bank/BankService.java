@@ -14,6 +14,9 @@ public class BankService {
     }
 
     public Bank addNewBank(String name, BigDecimal legalFee, BigDecimal naturalFee) {
+        if (bankDao.existsByName(name)) {
+            throw new BankApplicationException("Bank with name `" + name + "` already exists");
+        }
         return bankDao.save(new Bank(name, legalFee, naturalFee));
     }
 

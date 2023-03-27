@@ -18,7 +18,6 @@ public class CustomerService {
     }
 
     public Customer addCustomer(String name, CustomerType customerType) {
-
         if (customerDao.existsByName(name)) {
             throw new BankApplicationException("Customer with name `" + name + "` already exists");
         }
