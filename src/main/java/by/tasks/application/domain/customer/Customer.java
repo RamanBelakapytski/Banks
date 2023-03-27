@@ -19,6 +19,12 @@ public class Customer {
         this.customerType = customerType;
     }
 
+    private Customer(Builder builder) {
+        setId(builder.id);
+        setName(builder.name);
+        setCustomerType(builder.customerType);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,5 +69,33 @@ public class Customer {
                 ", name='" + name + '\'' +
                 ", customerType=" + customerType +
                 '}';
+    }
+
+    public static final class Builder {
+        private UUID id;
+        private String name;
+        private CustomerType customerType;
+
+        public Builder() {
+        }
+
+        public Builder id(UUID val) {
+            id = val;
+            return this;
+        }
+
+        public Builder name(String val) {
+            name = val;
+            return this;
+        }
+
+        public Builder customerType(CustomerType val) {
+            customerType = val;
+            return this;
+        }
+
+        public Customer build() {
+            return new Customer(this);
+        }
     }
 }

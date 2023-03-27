@@ -27,6 +27,14 @@ public class Account {
         this.balance = balance;
     }
 
+    private Account(Builder builder) {
+        setId(builder.id);
+        setCustomerId(builder.customerId);
+        setBankId(builder.bankId);
+        setCurrency(builder.currency);
+        setBalance(builder.balance);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,5 +97,45 @@ public class Account {
                 ", currency=" + currency +
                 ", balance=" + balance +
                 '}';
+    }
+
+    public static final class Builder {
+        private UUID id;
+        private UUID customerId;
+        private UUID bankId;
+        private Currency currency;
+        private BigDecimal balance;
+
+        public Builder() {
+        }
+
+        public Builder id(UUID val) {
+            id = val;
+            return this;
+        }
+
+        public Builder customerId(UUID val) {
+            customerId = val;
+            return this;
+        }
+
+        public Builder bankId(UUID val) {
+            bankId = val;
+            return this;
+        }
+
+        public Builder currency(Currency val) {
+            currency = val;
+            return this;
+        }
+
+        public Builder balance(BigDecimal val) {
+            balance = val;
+            return this;
+        }
+
+        public Account build() {
+            return new Account(this);
+        }
     }
 }

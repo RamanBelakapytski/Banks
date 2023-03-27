@@ -2,6 +2,7 @@ package by.tasks.application.domain.transaction;
 
 import by.tasks.application.BankApplicationException;
 import by.tasks.application.database.Database;
+import by.tasks.application.domain.account.Account;
 import by.tasks.application.domain.account.AccountDao;
 
 import java.math.BigDecimal;
@@ -38,8 +39,8 @@ public class TransactionService {
         Transaction transaction = null;
 
         try {
-            var accFrom = accountDao.findById(accountFrom).orElseThrow();
-            var accTo = accountDao.findById(accountTo).orElseThrow();
+            var accFrom = findById(accountFrom);
+            var accTo = findById(accountTo);
 
             if (accFrom.getCurrency() != accTo.getCurrency()) {
                 throw new BankApplicationException("Money transfer may be done only between accounts with same currency");
@@ -86,5 +87,10 @@ public class TransactionService {
 
     public List<Transaction> findByCustomerId(UUID customerId, LocalDate from, LocalDate to) {
         return transactionDao.findByCustomerId(customerId, from, to);
+    }
+
+    private Account findById(UUID id) {
+        return accountDao.findById(id)
+                .orElseThrow(() -> new BankApplicationException("Account with uid=" + id + " not found"));
     }
 }

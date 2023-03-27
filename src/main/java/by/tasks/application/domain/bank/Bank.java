@@ -25,6 +25,12 @@ public class Bank {
         this.fee = Map.of(CustomerType.LEGAL, legalFee, CustomerType.NATURAL, naturalFee);
     }
 
+    private Bank(Builder builder) {
+        setId(builder.id);
+        setName(builder.name);
+        setFee(builder.fee);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,5 +79,33 @@ public class Bank {
                 ", name='" + name + '\'' +
                 ", fee=" + fee +
                 '}';
+    }
+
+    public static final class Builder {
+        private UUID id;
+        private String name;
+        private Map<CustomerType, BigDecimal> fee;
+
+        public Builder() {
+        }
+
+        public Builder id(UUID val) {
+            id = val;
+            return this;
+        }
+
+        public Builder name(String val) {
+            name = val;
+            return this;
+        }
+
+        public Builder fee(Map<CustomerType, BigDecimal> val) {
+            fee = val;
+            return this;
+        }
+
+        public Bank build() {
+            return new Bank(this);
+        }
     }
 }
