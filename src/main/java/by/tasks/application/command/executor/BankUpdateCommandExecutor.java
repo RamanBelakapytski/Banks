@@ -5,11 +5,12 @@ import by.tasks.application.domain.bank.BankService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
-public class BankAddCommandExecutor implements CommandExecutor {
+public class BankUpdateCommandExecutor implements CommandExecutor {
     private final BankService bankService;
 
-    public BankAddCommandExecutor(BankService bankService) {
+    public BankUpdateCommandExecutor(BankService bankService) {
         this.bankService = bankService;
     }
 
@@ -18,9 +19,15 @@ public class BankAddCommandExecutor implements CommandExecutor {
         if (params.size() != 3) {
             throw new BankApplicationException("Invalid parameters count");
         }
-        var name = params.get(0);
+        UUID id;
         BigDecimal legalFee;
         BigDecimal naturalFee;
+
+        try {
+            id = UUID.fromString(params.get(0));
+        } catch (Exception e) {
+            throw new BankApplicationException("Invalid format for BANK_ID");
+        }
 
         try {
             legalFee = new BigDecimal(params.get(1));
@@ -34,6 +41,6 @@ public class BankAddCommandExecutor implements CommandExecutor {
             throw new BankApplicationException("Invalid format for NATURAL_FEE");
         }
 
-        System.out.println("Bank added: " + bankService.addNewBank(name, legalFee, naturalFee));
+        System.out.println("Bank added: " + bankService.updateBank(id, legalFee, naturalFee));
     }
 }

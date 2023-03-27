@@ -4,10 +4,7 @@ import by.tasks.application.database.Database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static by.tasks.application.domain.customer.CustomerType.LEGAL;
 import static by.tasks.application.domain.customer.CustomerType.NATURAL;
@@ -24,8 +21,8 @@ public class BankDao {
         final var arrayList = new ArrayList<Bank>();
 
         try (var connection = database.getConnection();
-                var statement = connection.prepareStatement("select id, name, legal_fee, natural_fee from bank");
-                var resultSet = statement.executeQuery()) {
+             var statement = connection.prepareStatement("select id, name, legal_fee, natural_fee from bank");
+             var resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 arrayList.add(toBank(resultSet));
             }
@@ -63,6 +60,22 @@ public class BankDao {
             }
         }
         return bank;
+    }
+
+    public Optional<Bank> findById(UUID id) {
+        try (var connection = database.getConnection();
+             var statement = connection.prepareStatement("select id, name, legal_fee, natural_fee from bank where id = ?")) {
+            statement.setObject(1, id);
+            try (var resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(toBank(resultSet));
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
     }
 
     private Bank toBank(ResultSet resultSet) throws SQLException {

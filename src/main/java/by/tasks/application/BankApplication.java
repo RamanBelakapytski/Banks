@@ -3,7 +3,6 @@ package by.tasks.application;
 import by.tasks.application.parser.CommandParser;
 import by.tasks.application.processor.CommandProcessor;
 
-
 import java.util.Scanner;
 
 public class BankApplication {
@@ -19,7 +18,8 @@ public class BankApplication {
     public void run() {
         final var scanner = new Scanner(System.in);
         var input = "";
-        do {
+
+        while (true) {
             System.out.println("Provide new command (type HELP to see all commands):");
             input = scanner.nextLine();
 
@@ -29,6 +29,6 @@ public class BankApplication {
                 System.out.println("Command not processed: " + e.getMessage());
             }
 
-        } while (!"EXIT".equals(input));
+        }
     }
 }

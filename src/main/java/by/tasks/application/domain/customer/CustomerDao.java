@@ -2,6 +2,8 @@ package by.tasks.application.domain.customer;
 
 import by.tasks.application.database.Database;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class CustomerDao {
         if (customer.getId() == null) {
             customer.setId(UUID.randomUUID());
             try (var connection = database.getConnection();
-                 var statement = connection.prepareStatement("INSERT INTO customer (id, name, legal_fee, natural_fee) VALUES (?, ?, ?, ?)")
+                 var statement = connection.prepareStatement("INSERT INTO customer (id, name, customer_type) VALUES (?, ?, ?)")
             ) {
                 statement.setObject(1, customer.getId());
                 statement.setString(2, customer.getName());
@@ -30,7 +32,7 @@ public class CustomerDao {
             }
         } else {
             try (var connection = database.getConnection();
-                 var statement = connection.prepareStatement("UPDATE customer SET name = ?, customerType = ? WHERE id = ?")
+                 var statement = connection.prepareStatement("UPDATE customer SET name = ?, customer_type = ? WHERE id = ?")
             ) {
                 statement.setString(1, customer.getName());
                 statement.setString(2, customer.getCustomerType().name());
@@ -63,6 +65,23 @@ public class CustomerDao {
                 (java.util.UUID) resultSet.getObject("id"),
                 resultSet.getString("name"),
                 CustomerType.valueOf(resultSet.getString("customer_type")));
+    }
+
+    public boolean existsByName(String name) {
+        try (var connection = database.getConnection();
+             var statement = existsStatement(connection, name);
+             var resultSet = statement.executeQuery()) {
+            resultSet.next();
+            return resultSet.getInt(1) > 0;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
+    }
+
+    private PreparedStatement existsStatement(Connection connection, String name) throws SQLException {
+        var statement = connection.prepareStatement("SELECT COUNT(*) FROM customer WHERE name = ?");
+        statement.setString(1, name);
+        return statement;
     }
 
 }

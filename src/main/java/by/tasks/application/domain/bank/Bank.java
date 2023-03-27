@@ -62,6 +62,10 @@ public class Bank {
         this.fee = fee;
     }
 
+    public void setFee(BigDecimal legalFee, BigDecimal naturalFee) {
+        this.fee = Map.of(CustomerType.LEGAL, legalFee, CustomerType.NATURAL, naturalFee);
+    }
+
     @Override
     public String toString() {
         return "Bank{" +
