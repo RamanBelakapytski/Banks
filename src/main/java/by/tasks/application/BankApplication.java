@@ -1,23 +1,32 @@
 package by.tasks.application;
 
+import by.tasks.application.parser.CommandParser;
+import by.tasks.application.processor.CommandProcessor;
+
+
 import java.util.Scanner;
 
 public class BankApplication {
 
-    private CommandParser commandParser = new CommandParser();
-    private CommandExecutor commandExecutor = new CommandExecutor();
+    private final CommandParser commandParser;
+    private final CommandProcessor commandProcessor;
+
+    public BankApplication(CommandParser commandParser, CommandProcessor commandProcessor) {
+        this.commandParser = commandParser;
+        this.commandProcessor = commandProcessor;
+    }
 
     public void run() {
         final var scanner = new Scanner(System.in);
         var input = "";
         do {
+            System.out.println("Provide new command (type HELP to see all commands):");
             input = scanner.nextLine();
 
             try {
-                final var command = commandParser.parse(input);
-                commandExecutor.execute(command);
+                commandProcessor.process(commandParser.parse(input));
             } catch (BankApplicationException e) {
-                System.out.println(e.getMessage());
+                System.out.println("Command not processed: " + e.getMessage());
             }
 
         } while (!"EXIT".equals(input));
