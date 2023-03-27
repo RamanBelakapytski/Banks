@@ -51,7 +51,7 @@ public class AccountDao {
 
     public Optional<Account> findById(UUID id) {
         try (var connection = database.getConnection();
-             var statement = connection.prepareStatement("SELECT id, customer_id, bank_id, currency, balance FROM bank WHERE id = ?")) {
+             var statement = connection.prepareStatement("SELECT id, customer_id, bank_id, currency, balance FROM account WHERE id = ?")) {
             statement.setObject(1, id);
             try (var resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {

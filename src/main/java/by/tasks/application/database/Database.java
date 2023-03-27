@@ -114,11 +114,13 @@ public class Database {
                 throws IllegalAccessException, IllegalArgumentException,
                 InvocationTargetException {
 
-            if (method.getName().equals("close") && !manualTransactionManagement) {
-                try {
-                    original.commit();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+            if (method.getName().equals("close")) {
+                if (!manualTransactionManagement) {
+                    try {
+                        original.commit();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 return null;
             }

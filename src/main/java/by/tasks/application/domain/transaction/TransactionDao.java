@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -63,10 +64,12 @@ public class TransactionDao {
              var statement = connection.prepareStatement("""
                      SELECT t.id, t.account_from_id, t.account_to_id, t.currency, t.amount, t.fee, t.datetime
                      FROM transaction t INNER JOIN account a ON t.account_from_id = a.id OR t.account_to_id = a.id
-                     WHERE a.customer_id = ?
+                     WHERE a.customer_id = ? AND t.datetime >= ? AND t.datetime <= ?
                      """)
         ) {
             statement.setObject(1, customerId);
+            statement.setTimestamp(2, Timestamp.valueOf(from.atTime(LocalTime.MIN)));
+            statement.setTimestamp(3, Timestamp.valueOf(to.atTime(LocalTime.MAX)));
             try (var resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     arrayList.add(toTransaction(resultSet));

@@ -6,7 +6,9 @@ import by.tasks.application.domain.account.AccountDao;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class TransactionService {
@@ -23,8 +25,16 @@ public class TransactionService {
     }
 
     public Transaction performTransaction(UUID accountFrom, UUID accountTo, BigDecimal amount) {
-        final var connection = database.getConnection();
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BankApplicationException("Amount should be positive");
+        }
+
+        if (accountFrom.equals(accountTo)) {
+            throw new BankApplicationException("Two different accounts should be provided");
+        }
+
         database.setManualTransactionManagement(true);
+        final var connection = database.getConnection();
         Transaction transaction = null;
 
         try {
@@ -51,6 +61,13 @@ public class TransactionService {
             transactionDao.save(transaction);
 
             connection.commit();
+        } catch (BankApplicationException bankApplicationException) {
+            try {
+                connection.rollback();
+            } catch (SQLException sqlException) {
+                throw new RuntimeException(sqlException);
+            }
+            throw bankApplicationException;
         } catch (Exception e) {
             try {
                 connection.rollback();
@@ -65,5 +82,9 @@ public class TransactionService {
             }
         }
         return transaction;
+    }
+
+    public List<Transaction> findByCustomerId(UUID customerId, LocalDate from, LocalDate to) {
+        return transactionDao.findByCustomerId(customerId, from, to);
     }
 }

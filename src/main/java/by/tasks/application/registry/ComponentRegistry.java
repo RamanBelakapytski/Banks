@@ -31,7 +31,7 @@ public class ComponentRegistry {
         CONTEXT.put(TransactionDao.class, new TransactionDao(getComponent(Database.class)));
 
         CONTEXT.put(BankService.class, new BankService(getComponent(BankDao.class), getComponent(CustomerDao.class), getComponent(AccountDao.class)));
-        CONTEXT.put(AccountService.class, new AccountService(getComponent(AccountDao.class), getComponent(BankDao.class), getComponent(CustomerDao.class)));
+        CONTEXT.put(AccountService.class, new AccountService(getComponent(AccountDao.class)));
         CONTEXT.put(CustomerService.class, new CustomerService(getComponent(CustomerDao.class), getComponent(BankDao.class), getComponent(AccountDao.class)));
 
         CONTEXT.put(ExitCommandExecutor.class, new ExitCommandExecutor());
@@ -46,11 +46,14 @@ public class ComponentRegistry {
         CONTEXT.put(FeeCalculator.class, new FeeCalculator(getComponent(BankDao.class), getComponent(CustomerDao.class)));
         CONTEXT.put(TransactionService.class, new TransactionService(getComponent(Database.class), getComponent(AccountDao.class), getComponent(FeeCalculator.class), getComponent(TransactionDao.class)));
         CONTEXT.put(CustomerAddAccountCommandExecutor.class, new CustomerAddAccountCommandExecutor(getComponent(AccountService.class)));
+        CONTEXT.put(CustomerGetTransactionsCommandExecutor.class, new CustomerGetTransactionsCommandExecutor(getComponent(TransactionService.class)));
+        CONTEXT.put(TransactionPerformCommandExecutor.class, new TransactionPerformCommandExecutor(getComponent(TransactionService.class)));
 
         CONTEXT.put(CommandProcessor.class, new CommandProcessor());
         CONTEXT.put(BankApplication.class, new BankApplication(getComponent(CommandParser.class), getComponent(CommandProcessor.class)));
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getComponent(Class<T> clazz) {
         final var component = CONTEXT.get(clazz);
         if (component == null) {
